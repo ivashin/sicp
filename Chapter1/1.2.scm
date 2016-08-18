@@ -43,3 +43,46 @@
           (else (iter (* prod base) base (- pow 1)))))
 
     (iter 1 b n))
+
+
+; Exercise 1.17
+; The exponentiation algorithms in this section are based on performing exponentiation by means of
+; repeated multiplication. In a similar way, one can perform integer multiplication by means of
+; repeated addition. The following multiplication procedure (in which it is assumed that our
+; language can only add, not multiply) is analogous to the expt procedure:
+;
+;(define (* a b)
+;  (if (= b 0)
+;      0
+;      (+ a (* a (- b 1)))))
+;
+; This algorithm takes a number of steps that is linear in b. Now suppose we include, together with
+; addition, operations double, which doubles an integer, and halve, which divides an (even) integer
+; by 2. Using these, design a multiplication procedure analogous to fast-expt that uses a logarithmic
+; number of steps.
+(define (fast-mult a b)
+  (define (double x) (* x 2))
+  (define (halve x) (/ x 2))
+  (define (even? x)
+    (= (remainder x 2) 0))
+
+  (cond ((= a 1) b)
+        ((even? a) (fast-mult (halve a) (double b)))
+        (else (+ b (fast-mult (- a 1) b)))))
+
+
+; Exercise 1.18
+; Using the results of exercises 1.16 and 1.17, devise a procedure that generates an iterative process
+; for multiplying two integers in terms of adding, doubling, and halving and uses a logarithmic number
+; of steps.
+(define (fast-mult-iter a b)
+  (define (double x) (* x 2))
+  (define (halve x) (/ x 2))
+  (define (even? x)
+    (= (remainder x 2) 0))
+  (define (iter sum a b)
+    (cond ((= a 0) sum)
+          ((even? a) (iter sum (halve a) (double b)))
+          (else (iter (+ sum b) (- a 1) b))))
+
+  (iter 0 a b))
