@@ -23,15 +23,19 @@
 (define (expmod base exp m)
   (cond ((= exp 0) 1)
         ((even? exp)
-         (remainder (square (expmod base (/ exp 2) m))
+         (remainder (square-check (expmod base (/ exp 2) m) m)
                     m))
         (else
          (remainder (* base (expmod base (- exp 1) m))
                     m))))
 
-(define (square x) (* x x))
+(define (square-check x m)
+  (define sq (* x x))
+  (if (and (> x 1) (< x (- m 1)) (= (remainder sq m) 1))
+      0
+      sq))
 
 (define (miller-rabin n)
   (define (try-it a)
-    (not (= (expmod a (- n 1) n) 0)))
+    (= (expmod a (- n 1) n) 1))
   (try-it (+ 1 (random-natural (- n 1)))))
